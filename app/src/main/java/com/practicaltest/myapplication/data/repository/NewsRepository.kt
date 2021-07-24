@@ -1,5 +1,10 @@
 package com.practicaltest.myapplication.data.repository
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import com.practicaltest.myapplication.data.entities.News
 import com.practicaltest.myapplication.data.local.NewsDao
 import com.practicaltest.myapplication.data.remote.NewsRemoteDataSource
@@ -12,6 +17,11 @@ class NewsRepository @Inject constructor(
     private val localNewsDataSource: NewsDao
 ) {
 
+    fun getPagedList(config: PagedList.Config): LiveData<PagedList<News>> {
+        val factory: DataSource.Factory<Int, News> = localNewsDataSource.getNewsListPaged()
+        return LivePagedListBuilder(factory, config)
+            .build()
+    }
     fun getNews() = performGetOperation(
         databaseQuery = { localNewsDataSource.getAllNews() },
         networkCall = { newsRemoteDataSource.getAllNews() },
@@ -19,6 +29,7 @@ class NewsRepository @Inject constructor(
     )
 
     fun getNewsList(itemResponse: List<Article>?): List<News> {
+        Log.d("Test: ",""+itemResponse?.size)
         val newsList = ArrayList<News>()
         itemResponse?.forEach { model ->
             newsList.add(

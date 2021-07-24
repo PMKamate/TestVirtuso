@@ -1,19 +1,17 @@
 package com.practicaltest.myapplication.ui.main
 
 import android.content.Intent
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.practicaltest.myapplication.R
-import com.practicaltest.myapplication.adapter.NewsAdapter
+import com.practicaltest.myapplication.adapter.NewsPageAdapter
 import com.practicaltest.myapplication.data.entities.News
 import com.practicaltest.myapplication.databinding.MainFragmentBinding
 import com.practicaltest.myapplication.details.DetailsActivity
@@ -22,10 +20,11 @@ import com.practicaltest.myapplication.utils.autoCleared
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainFragment : Fragment(), NewsAdapter.NewsItemListener {
+class MainFragment : Fragment(), NewsPageAdapter.NewsItemListener {
     private var binding: MainFragmentBinding by autoCleared()
     private val viewModel: MainViewModel by viewModels()
-    private lateinit var adapter: NewsAdapter
+   // private lateinit var adapter: NewsAdapter
+    private lateinit var adapter: NewsPageAdapter
     companion object {
         fun newInstance() = MainFragment()
     }
@@ -41,10 +40,12 @@ class MainFragment : Fragment(), NewsAdapter.NewsItemListener {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setupObservers()
+        loadMore()
     }
 
     private fun setupRecyclerView() {
-        adapter = NewsAdapter(this, context)
+       // adapter = NewsAdapter(this, context)
+        adapter = NewsPageAdapter(this,context)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
     }
@@ -55,8 +56,8 @@ class MainFragment : Fragment(), NewsAdapter.NewsItemListener {
                 Resource.Status.SUCCESS -> {
                     binding.progressBar.visibility = View.GONE
                     if (!it.data.isNullOrEmpty()) {
-                        Log.d("TAG: ", "news: " + it.data.size)
-                        adapter.setItems(ArrayList(it.data))
+                        Log.d("Test: ", "news: " + it.data.size)
+                       // adapter.setItems(ArrayList(it.data))
                     }
                 }
                 Resource.Status.ERROR ->
@@ -68,10 +69,9 @@ class MainFragment : Fragment(), NewsAdapter.NewsItemListener {
         })
     }
 
-    override fun onClickedNews(nesId: Int) {
+    override fun onClickedNews(model: News) {
         val intent = Intent(activity, DetailsActivity::class.java)
-        val model: News = adapter.items.get(nesId)
-        intent.putExtra("id", nesId)
+        intent.putExtra("id", model.id)
         intent.putExtra("tag", "NewsApiFragment")
         intent.putExtra("url", model.url)
         intent.putExtra("title", model.title)
@@ -80,5 +80,13 @@ class MainFragment : Fragment(), NewsAdapter.NewsItemListener {
         intent.putExtra("source", model.author)
         intent.putExtra("author", model.author)
         startActivity(intent)
+    }
+
+    fun loadMore(){
+        viewModel.getPagedNewsListViewModel().observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
+            adapter.notifyDataSetChanged()
+        })
+
     }
 }

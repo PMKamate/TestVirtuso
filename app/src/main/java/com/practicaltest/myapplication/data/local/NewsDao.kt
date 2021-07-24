@@ -1,11 +1,13 @@
 package com.practicaltest.myapplication.data.local
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.practicaltest.myapplication.data.entities.News
+
 
 @Dao
 interface NewsDao {
@@ -21,6 +23,10 @@ interface NewsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(news: News)
+
+    @Query("SELECT * FROM newsItem")
+    fun getNewsListPaged(): DataSource.Factory<Int, News>
+
 
 
 }

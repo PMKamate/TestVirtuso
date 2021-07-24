@@ -147,7 +147,8 @@
                 android:drawablePadding="10dp"
                 android:singleLine="true"
                 android:ellipsize="end"
-                android:text="Time" />
+                android:text="Time"
+                android:visibility="gone"/>
 
 
         </RelativeLayout>

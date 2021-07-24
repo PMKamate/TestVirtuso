@@ -88,6 +88,6 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_android_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_android_version"
 
-
-
+    //Paging Library
+    implementation 'androidx.paging:paging-runtime:2.1.2'
 }
