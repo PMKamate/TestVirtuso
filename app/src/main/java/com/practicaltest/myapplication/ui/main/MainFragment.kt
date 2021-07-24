@@ -56,7 +56,6 @@ class MainFragment : Fragment(), NewsPageAdapter.NewsItemListener {
                 Resource.Status.SUCCESS -> {
                     binding.progressBar.visibility = View.GONE
                     if (!it.data.isNullOrEmpty()) {
-                        Log.d("Test: ", "news: " + it.data.size)
                        // adapter.setItems(ArrayList(it.data))
                     }
                 }
